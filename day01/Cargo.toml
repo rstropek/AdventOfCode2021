@@ -1,0 +1,9 @@
+[package]
+name = "day01"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aoc_utils = { path = "../aoc_utils" }
+regex = "1"
+lazy_static = "1"
