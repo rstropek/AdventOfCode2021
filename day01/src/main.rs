@@ -1,11 +1,10 @@
 use aoc_utils::{print_day_header, read_input_file};
 
-fn get_depths(contents: String) -> Vec<i32> {
+fn get_depths<'a>(contents: &'a String) -> impl Iterator<Item = i32> + 'a {
     contents
         .as_str()
-        .split('\n')
+        .lines()
         .map(|d| d.parse().unwrap())
-        .collect()
 }
 
 fn count_increases(depths: &Vec<i32>) -> i32 {
@@ -27,7 +26,7 @@ fn main() {
     print_day_header(1);
 
     // Star 1
-    let depths = get_depths(read_input_file(1));
+    let depths = get_depths(&read_input_file(1)).collect();
     let increases = count_increases(&depths);
     println!("  Result Star 1: {:?}", increases);
 
@@ -44,7 +43,7 @@ mod tests_star1 {
 
     #[test]
     fn test_1() {
-        let d = get_depths(String::from("199\n200\n208\n210\n200\n207\n240\n269\n260\n263"));
+        let d = get_depths(&String::from("199\n200\n208\n210\n200\n207\n240\n269\n260\n263")).collect();
         assert_eq!(count_increases(&d), 7);
     }
 }
@@ -56,7 +55,7 @@ mod tests_star2 {
 
     #[test]
     fn test_2() {
-        let d = get_depths(String::from("199\n200\n208\n210\n200\n207\n240\n269\n260\n263"));
+        let d = get_depths(&String::from("199\n200\n208\n210\n200\n207\n240\n269\n260\n263")).collect();
         let w = get_windows(&d);
         assert_eq!(count_increases(&w), 5);
     }
