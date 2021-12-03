@@ -1,15 +1,14 @@
-use num::Num;
 use aoc_utils::{print_day_header, read_input_file};
+use num::PrimInt;
 
-fn get_numbers<T: Num + Default>(contents: &'_ str) -> (Vec<T>, usize)
-{
+fn get_numbers<T: PrimInt + Default>(contents: &'_ str) -> (Vec<T>, u32) {
     // Number of bits (=length of first line)
     let mut bits = 0;
     let result = contents
         .lines()
         .map(|c| {
             if bits == 0 {
-                bits = c.len();
+                bits = c.len() as u32;
             }
             T::from_str_radix(c, 2).unwrap_or_default()
         })
@@ -20,13 +19,13 @@ fn get_numbers<T: Num + Default>(contents: &'_ str) -> (Vec<T>, usize)
 enum BitResult {
     Equal,
     MoreOnes,
-    MoreZeroes
+    MoreZeroes,
 }
 
-fn find_majority_bit(numbers: &[u16], bit: usize) -> BitResult {
+fn find_majority_bit<T: PrimInt + Clone>(numbers: &[T], bit: u32) -> BitResult {
     let mut ones: usize = 0;
     for n in numbers.iter().cloned().enumerate() {
-        if (n.1 >> bit) & 1 == 1 {
+        if n.1.unsigned_shr(bit) & T::from(1).unwrap() == T::from(1).unwrap() {
             ones += 1;
         }
     }
@@ -40,37 +39,40 @@ fn find_majority_bit(numbers: &[u16], bit: usize) -> BitResult {
     }
 }
 
-fn oxygen_filter(numbers: &[u16], bit: usize) -> u16 {
+fn oxygen_filter<T: PrimInt>(numbers: &[T], bit: u32) -> T {
     match find_majority_bit(numbers, bit) {
-        BitResult::Equal => 1,
-        BitResult::MoreOnes => 1,
-        BitResult::MoreZeroes => 0
+        BitResult::Equal => T::from(1).unwrap(),
+        BitResult::MoreOnes => T::from(1).unwrap(),
+        BitResult::MoreZeroes => T::from(0).unwrap(),
     }
 }
 
-fn co2_filter(numbers: &[u16], bit: usize) -> u16 {
+fn co2_filter<T: PrimInt>(numbers: &[T], bit: u32) -> T {
     match find_majority_bit(numbers, bit) {
-        BitResult::Equal => 0,
-        BitResult::MoreOnes => 0,
-        BitResult::MoreZeroes => 1
+        BitResult::Equal => T::from(0).unwrap(),
+        BitResult::MoreOnes => T::from(0).unwrap(),
+        BitResult::MoreZeroes => T::from(1).unwrap(),
     }
 }
 
-fn aggregate(numbers: &[u16], bits: usize) -> (u16, u16) {
-    let mut gamma: u16 = 0;
+fn aggregate<T: PrimInt>(numbers: &[T], bits: u32) -> (T, T) {
+    let mut gamma: T = T::from(0).unwrap();
     for i in (0..bits).rev() {
         if let BitResult::MoreOnes = find_majority_bit(numbers, i) {
-            gamma |= 1 << i;
+            gamma = gamma | T::from(1 << i).unwrap();
         }
     }
 
-    (gamma, !gamma & ((1 << bits) - 1))
+    (gamma, !gamma & T::from((1 << bits) - 1).unwrap())
 }
 
-fn filter(mut numbers: Vec<u16>, bits: usize, f: fn(&[u16], usize) -> u16) -> u16 {
+fn filter<T: PrimInt>(mut numbers: Vec<T>, bits: u32, f: fn(&[T], u32) -> T) -> T {
     for i in (0..bits).rev() {
         let r = f(&numbers, i);
-        numbers = numbers.into_iter().filter(|n| (*n >> i) & 1 == r).collect();
+        numbers = numbers
+            .into_iter()
+            .filter(|n| ((*n).unsigned_shr(i)) & T::from(1).unwrap() == r)
+            .collect();
         if numbers.len() == 1 {
             break;
         }
@@ -84,14 +86,14 @@ fn main() {
 
     // Star 1
     let input = read_input_file(3);
-    let (numbers, bits) = get_numbers(&input);
+    let (numbers, bits) = get_numbers::<u16>(&input);
     let result = aggregate(&numbers, bits);
-    println!("  Result Star 1: {:?}", result.0 as i32 * result.1 as i32);
+    println!("  Result Star 1: {:?}", result.0 as u32 * result.1 as u32);
 
     // Star 2
     let oxygen = filter(numbers.clone(), bits, oxygen_filter);
     let co2 = filter(numbers, bits, co2_filter);
-    println!("  Result Star 2: {:?}", oxygen as i32 * co2 as i32);
+    println!("  Result Star 2: {:?}", oxygen as u32 * co2 as u32);
 }
 
 #[cfg(test)]
@@ -105,10 +107,10 @@ mod tests_star1 {
 
     #[test]
     fn test_1() {
-        let (numbers, bits) = get_numbers(TEST_INPUT);
+        let (numbers, bits) = get_numbers::<u16>(TEST_INPUT);
         let result = aggregate(&numbers, bits);
         assert_eq!((0b10110, 0b01001), result);
-        assert_eq!(198, result.0 as i32 * result.1 as i32);
+        assert_eq!(198, result.0 as u32 * result.1 as u32);
     }
 }
 
@@ -119,21 +121,21 @@ mod tests_star2 {
 
     #[test]
     fn test_oxygen() {
-        let (numbers, bits) = get_numbers(TEST_INPUT);
+        let (numbers, bits) = get_numbers::<u16>(TEST_INPUT);
         let result = filter(numbers, bits, oxygen_filter);
         assert_eq!(0b10111, result);
     }
 
     #[test]
     fn test_co2() {
-        let (numbers, bits) = get_numbers(TEST_INPUT);
+        let (numbers, bits) = get_numbers::<u16>(TEST_INPUT);
         let result = filter(numbers, bits, co2_filter);
         assert_eq!(0b01010, result);
     }
 
     #[test]
     fn test_result() {
-        let (numbers, bits) = get_numbers(TEST_INPUT);
+        let (numbers, bits) = get_numbers::<u16>(TEST_INPUT);
         let oxygen = filter(numbers.clone(), bits, oxygen_filter);
         let co2 = filter(numbers, bits, co2_filter);
         assert_eq!(230, oxygen as i32 * co2 as i32);
