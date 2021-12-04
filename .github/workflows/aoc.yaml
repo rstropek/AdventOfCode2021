@@ -22,7 +22,7 @@ jobs:
 #         Optional inputs:
 #         
           year: 2021                                                                                     # The year for which stats should be retrieved
-#         leaderboard: 'https://adventofcode.com/2021/leaderboard/private/view/191086.json'              # The url of the leaderboard from witch the data is fetched. Typically your private leaderboard.
+          leaderboard: 'https://adventofcode.com/2021/leaderboard/private/view/972845'                   # The url of the leaderboard from witch the data is fetched. Typically your private leaderboard.
 #         file: 'README.md'                                                                              # The file that contains the badges
 #         dayRegex: '(?<=https:\/\/img\.shields\.io\/badge\/day%20📅-)[0-9]+(?=-blue)'                   # Regular expression that finds the content of the day badge in your file.
 #         starsRegex: '(?<=https:\/\/img\.shields\.io\/badge\/stars%20⭐-)[0-9]+(?=-yellow)'             # Regular expression that finds the content of the stars badge in your file.
