@@ -30,7 +30,7 @@ fn find_majority_bit<T: PrimInt + Clone>(numbers: &[T], bit: u32) -> BitResult {
         }
     }
 
-    if ones as f32 == numbers.len() as f32 / 2f32 {
+    if (ones as f32 - numbers.len() as f32 / 2f32).abs() < 0.01 {
         BitResult::Equal
     } else if ones > numbers.len() / 2 {
         BitResult::MoreOnes
