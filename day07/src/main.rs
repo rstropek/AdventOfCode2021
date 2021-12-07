@@ -21,18 +21,45 @@ fn calculate_fuel_2(p1: i32, p2: i32) -> i32 {
     (p2 - p1).abs() * ((p2 - p1).abs() + 1) / 2
 }
 
+fn calculate_total_fuel_2(values: &[i32], p: i32) -> i32 {
+    values
+        .iter()
+        .cloned()
+        .fold(0, |acc, v| acc + calculate_fuel_2(p, v))
+}
+
 fn find_lowest_fuel(values: &[i32]) -> i32 {
-    let mut min_fuel = i32::MAX;
-    'outer: for i in values[0]..values[values.len() - 1] {
-        let mut fuel = 0;
-        for v in values.iter().cloned() {
-            fuel += calculate_fuel_2(i, v);
-            if fuel >= min_fuel {
-                break 'outer;
+    let mut up = true;
+    let mut down = true;
+    let pos = values.into_iter().sum::<i32>() / values.len() as i32;
+    let mut min_fuel = calculate_total_fuel_2(values, pos);
+    let mut distance = 1;
+    loop {
+        if up {
+            let up_fuel = calculate_total_fuel_2(values, pos + distance);
+            if up_fuel < min_fuel {
+                min_fuel = up_fuel;
+                down = false;
+            } else {
+                up = false
             }
         }
-        
-        min_fuel = fuel;
+
+        if down {
+            let down_fuel = calculate_total_fuel_2(values, pos - distance);
+            if down_fuel < min_fuel {
+                min_fuel = down_fuel;
+                up = false;
+            } else {
+                down = false;
+            }
+        }
+
+        if !up && !down {
+            break;
+        }
+
+        distance += 1;
     }
 
     min_fuel
