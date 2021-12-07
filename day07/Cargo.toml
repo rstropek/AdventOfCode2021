@@ -1,0 +1,9 @@
+[package]
+name = "day07"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aoc_utils = { path = "../aoc_utils" }
+regex = "1"
+itertools = "0.10"

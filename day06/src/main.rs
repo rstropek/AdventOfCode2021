@@ -25,7 +25,7 @@ fn calculate(mut fishes: [u64; 9], iterations: usize) -> u64 {
 }
 
 fn main() {
-    print_day_header(5);
+    print_day_header(6);
 
     let input = read_input_file(6);
     let fishes = parse_input(&input);
