@@ -22,6 +22,7 @@ func TestParseInput(t *testing.T) {
 	assert.Equal(t, 12, len(input))
 	assert.Equal(t, 12, len(input[0]))
 
+	// Test presence of ghost cells
 	for _, v := range input[0] {
 		assert.Equal(t, byte(0), v)
 	}
