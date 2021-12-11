@@ -11,8 +11,7 @@ func parseInput(input string) []string {
 	return s.Split(input, "\n")
 }
 
-func processInput1(input []string) int {
-	sum := 0
+func processInput1(input []string) (sum int) {
 	for _, l := range input {
 		_, err := process(l, 0)
 		e, ok := err.(*SyntaxError)
@@ -21,7 +20,7 @@ func processInput1(input []string) int {
 		}
 	}
 
-	return sum
+	return
 }
 
 func processInput2(input []string) int {
@@ -43,7 +42,7 @@ const opening string = "([{<"
 const closing string = ")]}>"
 
 func indexOf(set string, char byte) int {
-	for i := 0; i < len(set); i++ {
+	for i := range set {
 		if set[i] == char {
 			return i
 		}
@@ -79,8 +78,7 @@ type IncompleteError struct{
 	missing string
 }
 
-func (e IncompleteError) Points() int {
-	sum := 0
+func (e IncompleteError) Points() (sum int) {
 	for _, m := range e.missing {
 		sum *= 5
 		switch m {
@@ -97,7 +95,7 @@ func (e IncompleteError) Points() int {
 		}
 	}
 
-	return sum
+	return
 }
 
 func (e *IncompleteError) Error() string {
@@ -105,7 +103,6 @@ func (e *IncompleteError) Error() string {
 }
 
 func process(input string, start int) (int, error) {
-
 	for {
 		if start >= len(input) {
 			// Reached end of string
