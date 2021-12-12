@@ -115,7 +115,7 @@ func main() {
 	input := parseInput(string(dat))
 	flashes, allFlash := process(input)
 
-	fmt.Println("Day 9:")
+	fmt.Println("Day 11:")
 
 	fmt.Printf("\tPart 1 result is %d\n", flashes)
 	fmt.Printf("\tPart 2 result is %d\n", allFlash)

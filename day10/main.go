@@ -170,7 +170,7 @@ func main() {
 	dat, _ := os.ReadFile("input.txt")
 	input := parseInput(string(dat))
 
-	fmt.Println("Day 9:")
+	fmt.Println("Day 10:")
 
 	fmt.Printf("\tPart 1 result is %d\n", processInput1(input))
 	fmt.Printf("\tPart 2 result is %d\n", processInput2(input))
