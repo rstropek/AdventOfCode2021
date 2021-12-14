@@ -70,10 +70,6 @@ func doFolding(p paper, singleRun bool) (sum int, output string) {
 
 	for _, fold := range p.folds {
 		if fold.axis == "y" {
-			// if fold.ix != (len(content) - 1) / 2 {
-			// 	panic("Not fonding in the middle")
-			// }
-
 			newContent := make([][]bool, fold.ix)
 
 			// Copy upper half
@@ -92,10 +88,6 @@ func doFolding(p paper, singleRun bool) (sum int, output string) {
 
 			content = newContent
 		} else {
-			// if fold.ix != (len(content[0]) - 1) / 2 {
-			// 	panic("Not fonding in the middle")
-			// }
-
 			newContent := make([][]bool, len(content))
 
 			// Copy left half
@@ -147,21 +139,6 @@ func doFolding(p paper, singleRun bool) (sum int, output string) {
 	output = outputBuffer.String()
 
 	return
-}
-
-func print(content [][]bool) {
-	for _, line := range content {
-		for _, col := range line {
-			if col {
-				fmt.Print("#")
-			} else {
-				fmt.Print(".")
-			}
-		}
-		fmt.Println()
-	}
-
-	fmt.Println()
 }
 
 func main() {
