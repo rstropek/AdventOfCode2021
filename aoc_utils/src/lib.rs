@@ -1,4 +1,4 @@
-use std::{fs, path::{Path, PathBuf}};
+use std::{fs::{self, File}, path::{Path, PathBuf}, io::Read};
 
 use termion::{color, style};
 
@@ -10,6 +10,16 @@ pub fn get_input_file_name(day: i32) -> PathBuf {
 /// Reads the input file for a given day into a string
 pub fn read_input_file(day: i32) -> String {
     fs::read_to_string(get_input_file_name(day)).unwrap()
+}
+
+/// Reads the input file for a given day into a string
+pub fn read_input_file_into_bytes(day: i32) -> Vec<u8> {
+    let input_file_name = get_input_file_name(day);
+    let mut f = File::open(input_file_name).unwrap();
+    let md = f.metadata().unwrap();
+    let mut result = Vec::<u8>::with_capacity(md.len() as usize);
+    f.read_to_end(&mut result).unwrap();
+    result
 }
 
 /// Prints colored day header
@@ -39,4 +49,10 @@ mod test {
         let res = read_input_file(99);
         assert_eq!(res, "Test", "file content = '{:?}'", res);
     }
-}
+
+    #[test]
+    fn read_day99_input_bytes() {
+        let res = read_input_file_into_bytes(99);
+        assert_eq!(4, res.len());
+        assert_eq!(b'T', res[0]);
+    }}

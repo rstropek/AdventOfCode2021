@@ -31,7 +31,7 @@ fn calculate_total_fuel_2(values: &[i32], p: i32) -> i32 {
 fn find_lowest_fuel(values: &[i32]) -> i32 {
     let mut up = true;
     let mut down = true;
-    let pos = values.into_iter().sum::<i32>() / values.len() as i32;
+    let pos = values.iter().sum::<i32>() / values.len() as i32;
     let mut min_fuel = calculate_total_fuel_2(values, pos);
     let mut distance = 1;
     loop {
