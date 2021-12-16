@@ -43,6 +43,31 @@ enum Packet {
     Operator(Operator),
 }
 
+impl Packet {
+    fn version_sum(&self) -> u32 {
+        match self {
+            Packet::Literal(v) => v.header.version as u32,
+            Packet::Operator(o) => o.header.version as u32 + o.packets.iter().map(|o| o.version_sum()).sum::<u32>(),
+        }
+    }
+
+    fn evaluate(&self) -> u64 {
+        match self {
+            Packet::Literal(v) => v.value as u64,
+            Packet::Operator(o) => match o.header.type_id {
+                0 => o.packets.iter().map(|o| o.evaluate()).sum::<u64>(),
+                1 => o.packets.iter().map(|o| o.evaluate()).product(),
+                2 => o.packets.iter().map(|o| o.evaluate()).min().unwrap(),
+                3 => o.packets.iter().map(|o| o.evaluate()).max().unwrap(),
+                5 => if o.packets[0].evaluate() > o.packets[1].evaluate() { 1 } else { 0 },
+                6 => if o.packets[0].evaluate() < o.packets[1].evaluate() { 1 } else { 0 },
+                7 => if o.packets[0].evaluate() == o.packets[1].evaluate() { 1 } else { 0 },
+                _ => panic!("Invalid type id")
+            },
+        }
+    }
+}
+
 fn read_header(bits: &BitSlice::<Msb0, u8>, bit_index: &mut usize) -> Header {
     let h = Header{
         version: bits[*bit_index..*bit_index + 3].load_be(),
@@ -117,29 +142,6 @@ fn dispatch(bits: &BitSlice::<Msb0, u8>, bit_index: &mut usize) -> Packet {
     }
 }
 
-fn version_sum(p: &Packet) -> u32 {
-    match p {
-        Packet::Literal(v) => v.header.version as u32,
-        Packet::Operator(o) => o.header.version as u32 + o.packets.iter().map(|o| version_sum(o)).sum::<u32>(),
-    }
-}
-
-fn evaluate(p: &Packet) -> u64 {
-    match p {
-        Packet::Literal(v) => v.value as u64,
-        Packet::Operator(o) => match o.header.type_id {
-            0 => o.packets.iter().map(|o| evaluate(o)).sum::<u64>(),
-            1 => o.packets.iter().map(|o| evaluate(o)).product(),
-            2 => o.packets.iter().map(|o| evaluate(o)).min().unwrap(),
-            3 => o.packets.iter().map(|o| evaluate(o)).max().unwrap(),
-            5 => if evaluate(&o.packets[0]) > evaluate(&o.packets[1]) { 1 } else { 0 },
-            6 => if evaluate(&o.packets[0]) < evaluate(&o.packets[1]) { 1 } else { 0 },
-            7 => if evaluate(&o.packets[0]) == evaluate(&o.packets[1]) { 1 } else { 0 },
-            _ => panic!("Invalid type id")
-        },
-    }
-}
-
 fn main() {
     print_day_header(16);
 
@@ -151,10 +153,10 @@ fn main() {
     let packet = dispatch(bits, &mut bit_index);
 
     // Star 1
-    println!("  Result Star 1: {:?}", version_sum(&packet));
+    println!("  Result Star 1: {:?}", packet.version_sum());
 
     // Star 2
-    println!("  Result Star 2: {:?}", evaluate(&packet));
+    println!("  Result Star 2: {:?}", packet.evaluate());
 }
 
 /// Tests for star 1
@@ -190,7 +192,7 @@ mod tests_star1 {
         let header = read_header(bits, &mut bit_index);
         let packet = read_literal(header.clone(), bits, &mut bit_index);
         assert_eq!(Packet::Literal(Literal{header, value: 2021}), packet);
-        assert_eq!(6, version_sum(&packet));
+        assert_eq!(6, packet.version_sum());
     }
 
     macro_rules! try_parse_packet {
@@ -277,7 +279,7 @@ mod tests_star1 {
 
         let mut bit_index = 0usize;
         let packet = dispatch(bits, &mut bit_index);
-        assert_eq!(16, version_sum(&packet))
+        assert_eq!(16, packet.version_sum())
     }
 
     #[test]
@@ -287,7 +289,7 @@ mod tests_star1 {
 
         let mut bit_index = 0usize;
         let packet = dispatch(bits, &mut bit_index);
-        assert_eq!(12, version_sum(&packet))
+        assert_eq!(12, packet.version_sum())
     }
 
     #[test]
@@ -297,7 +299,7 @@ mod tests_star1 {
 
         let mut bit_index = 0usize;
         let packet = dispatch(bits, &mut bit_index);
-        assert_eq!(23, version_sum(&packet))
+        assert_eq!(23, packet.version_sum())
     }
 
     #[test]
@@ -307,7 +309,7 @@ mod tests_star1 {
 
         let mut bit_index = 0usize;
         let packet = dispatch(bits, &mut bit_index);
-        assert_eq!(31, version_sum(&packet))
+        assert_eq!(31, packet.version_sum())
     }
 
     #[test]
@@ -330,7 +332,7 @@ mod tests_star2 {
 
         let mut bit_index = 0usize;
         let packet = dispatch(bits, &mut bit_index);
-        assert_eq!(3, evaluate(&packet))
+        assert_eq!(3, packet.evaluate())
     }
 
     #[test]
@@ -340,6 +342,6 @@ mod tests_star2 {
 
         let mut bit_index = 0usize;
         let packet = dispatch(bits, &mut bit_index);
-        assert_eq!(7, evaluate(&packet))
+        assert_eq!(7, packet.evaluate())
     }
 }
