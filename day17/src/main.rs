@@ -1,7 +1,7 @@
 use aoc_utils::{print_day_header};
 
-fn solve_1(min_x: i32) -> i32 {
-    let y = min_x.abs() - 1;
+fn solve_1(min_y: i32) -> i32 {
+    let y = min_y.abs() - 1;
     y * (y + 1) / 2
 }
 
