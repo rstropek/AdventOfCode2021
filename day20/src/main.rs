@@ -132,7 +132,7 @@ impl ImageProcessor {
 }
 
 fn main() {
-    print_day_header(19);
+    print_day_header(20);
 
     let mut input = parse_input(&read_input_file(20));
 
