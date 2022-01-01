@@ -1,8 +1,4 @@
-#![allow(dead_code)]
-#![allow(unused_imports)]
-
 use core::panic;
-use std::collections::HashSet;
 
 use aoc_utils::{print_day_header, read_input_file};
 use cubes::{Cube, Point3d};
@@ -62,7 +58,7 @@ fn process(input: &[Command]) -> i64 {
                 // Cut away all parts that are already turned on
                 let mut turning_on = vec![c.1.cube];
                 for already_on in on_cubes.iter() {
-                    turning_on = turning_on.iter().flat_map(|c| c.cut(&already_on)).collect();
+                    turning_on = turning_on.iter().flat_map(|c| c.cut(already_on)).collect();
                 }
 
                 on_cubes.extend(turning_on);

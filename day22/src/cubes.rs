@@ -1,4 +1,4 @@
-use std::cmp::{self, max, min};
+use std::cmp::{max, min};
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub struct Point3d {
@@ -31,60 +31,6 @@ impl Cube {
 
     pub fn volume(&self) -> i64 {
         (self.corner2.x - self.corner1.x + 1) as i64 * (self.corner2.y - self.corner1.y + 1) as i64 * (self.corner2.z - self.corner1.z + 1) as i64
-    }
-
-    pub fn is_point_inside(&self, p: &Point3d) -> bool {
-        self.corner1.x < p.x && p.x < self.corner2.x && self.corner1.y < p.y && p.y < self.corner2.y && self.corner1.z < p.z && p.z < self.corner2.z
-    }
-
-    pub fn points(&self) -> impl Iterator<Item = Point3d> {
-        vec![
-            Point3d {
-                x: self.corner1.x,
-                y: self.corner1.y,
-                z: self.corner1.z,
-            },
-            Point3d {
-                x: self.corner2.x,
-                y: self.corner1.y,
-                z: self.corner1.z,
-            },
-            Point3d {
-                x: self.corner2.x,
-                y: self.corner2.y,
-                z: self.corner1.z,
-            },
-            Point3d {
-                x: self.corner1.x,
-                y: self.corner2.y,
-                z: self.corner1.z,
-            },
-            Point3d {
-                x: self.corner1.x,
-                y: self.corner1.y,
-                z: self.corner2.z,
-            },
-            Point3d {
-                x: self.corner2.x,
-                y: self.corner1.y,
-                z: self.corner2.z,
-            },
-            Point3d {
-                x: self.corner2.x,
-                y: self.corner2.y,
-                z: self.corner2.z,
-            },
-            Point3d {
-                x: self.corner1.x,
-                y: self.corner2.y,
-                z: self.corner2.z,
-            },
-        ]
-        .into_iter()
-    }
-
-    pub fn is_inside(&self, other: &Cube) -> bool {
-        other.points().all(|p| self.is_point_inside(&p))
     }
 
     pub fn intersection(&self, other: &Cube) -> Option<Cube> {
@@ -170,22 +116,6 @@ mod tests_cubes {
     use super::*;
 
     #[test]
-    fn test_is_point_inside() {
-        let cube = Cube::new(0, 0, 0, 10, 10, 10);
-        assert!(cube.is_point_inside(&Point3d { x: 5, y: 5, z: 5 }));
-        assert!(!cube.is_point_inside(&Point3d { x: 15, y: 5, z: 5 }));
-        assert!(!cube.is_point_inside(&Point3d { x: 5, y: 15, z: 5 }));
-        assert!(!cube.is_point_inside(&Point3d { x: 5, y: 5, z: 15 }));
-    }
-
-    #[test]
-    fn test_is_point_inside_neg() {
-        let cube = Cube::new(-5, 5, -5, 5, -5, 5);
-        assert!(cube.is_point_inside(&Point3d { x: 0, y: 0, z: 0 }));
-        assert!(!cube.is_point_inside(&Point3d { x: -6, y: 0, z: 0 }));
-    }
-
-    #[test]
     fn test_new_cube() {
         let cube = Cube::new(-5, -5, -5, 5, 5, 5);
         assert_eq!(Cube::new(-5, -5, -5, 5, 5, 5), cube);
@@ -195,20 +125,6 @@ mod tests_cubes {
 
         let cube = Cube::new(5, -5, 5, -5, 5, -5);
         assert_eq!(Cube::new(-5, -5, -5, 5, 5, 5), cube);
-    }
-
-    #[test]
-    fn test_is_inside() {
-        let cube = Cube::new(-5, -5, -5, 5, 5, 5);
-        let cube_inside = Cube::new(-2, -2, -2, 2, 2, 2);
-        assert!(cube.is_inside(&cube_inside));
-    }
-
-    #[test]
-    fn test_is_not_inside() {
-        let cube = Cube::new(-5, -5, -5, 5, 5, 5);
-        let cube_inside = Cube::new(-2, -2, -2, 2, 2, 6);
-        assert!(!cube.is_inside(&cube_inside));
     }
 
     #[test]
